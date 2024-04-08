@@ -11,4 +11,7 @@ public interface SqlSession extends Closeable {
 
     <T> T getMapper(Class<T> type);
 
+    int insert(String statement, Object parameter);
+
+    int update(String statement, Object parameter);
 }

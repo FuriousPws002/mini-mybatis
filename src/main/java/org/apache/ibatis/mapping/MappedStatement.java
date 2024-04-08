@@ -17,6 +17,19 @@ public class MappedStatement {
         return id;
     }
 
+    public SqlCommandType getSqlCommandType() {
+        return sqlCommandType;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public BoundSql getBoundSql(Object parameterObject) {
+        BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+        return new BoundSql(boundSql.getSql());
+    }
+
     public static class Builder {
         private MappedStatement mappedStatement = new MappedStatement();
 

@@ -6,8 +6,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
 
 import org.apache.ibatis.binding.MapperRegistry;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.statement.PrepareStatementHandler;
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 
 /**
@@ -16,6 +21,8 @@ import org.apache.ibatis.mapping.MappedStatement;
  * @author furious 2024/4/3
  */
 public class Configuration {
+
+    private DataSource dataSource;
 
     private final MapperRegistry mapperRegistry = new MapperRegistry(this);
     private final Set<String> loadedResources = new HashSet<>();
@@ -54,5 +61,17 @@ public class Configuration {
 
     public Collection<MappedStatement> getMappedStatements() {
         return mappedStatements.values();
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+        return new PrepareStatementHandler(executor, mappedStatement, parameterObject, boundSql);
     }
 }

@@ -3,3 +3,4 @@
 # 功能模块
 [1.注册Mapper接口](https://github.com/FuriousPws002/mini-mybatis/wiki/1.%E6%B3%A8%E5%86%8CMapper%E6%8E%A5%E5%8F%A3 "Markdown") <br>
 [2.解析xml中静态sql的mapper](https://github.com/FuriousPws002/mini-mybatis/wiki/2.%E8%A7%A3%E6%9E%90xml%E4%B8%AD%E9%9D%99%E6%80%81sql%E7%9A%84mapper "Markdown") <br>
+[3.执行静态sql](https://github.com/FuriousPws002/mini-mybatis/wiki/3.%E6%89%A7%E8%A1%8C%E9%9D%99%E6%80%81sql "Markdown") <br>
