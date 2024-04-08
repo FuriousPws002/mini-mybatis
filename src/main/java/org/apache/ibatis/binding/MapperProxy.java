@@ -20,6 +20,7 @@ public class MapperProxy<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return null;
+        final MapperMethod mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+        return mapperMethod.execute(sqlSession, args);
     }
 }
