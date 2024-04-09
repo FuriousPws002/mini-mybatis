@@ -14,6 +14,7 @@ import org.apache.ibatis.executor.statement.PrepareStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * mybatis全局配置类
@@ -27,6 +28,7 @@ public class Configuration {
     private final MapperRegistry mapperRegistry = new MapperRegistry(this);
     private final Set<String> loadedResources = new HashSet<>();
     private final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
     public Configuration() {
     }
@@ -73,5 +75,9 @@ public class Configuration {
 
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         return new PrepareStatementHandler(executor, mappedStatement, parameterObject, boundSql);
+    }
+
+    public TypeHandlerRegistry getTypeHandlerRegistry() {
+        return typeHandlerRegistry;
     }
 }
