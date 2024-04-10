@@ -2,6 +2,7 @@ package org.apache.ibatis.type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author furious 2024/4/9
@@ -31,5 +32,9 @@ public class TypeHandlerRegistry {
 
     public TypeHandler<Object> getUnknownTypeHandler() {
         return unknownTypeHandler;
+    }
+
+    public boolean hasTypeHandler(Class<?> type) {
+        return Objects.nonNull(getTypeHandler(type));
     }
 }

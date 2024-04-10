@@ -10,10 +10,13 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.PrepareStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.scripting.LanguageDriver;
+import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
@@ -29,6 +32,7 @@ public class Configuration {
     private final Set<String> loadedResources = new HashSet<>();
     private final Map<String, MappedStatement> mappedStatements = new HashMap<>();
     private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+    private final LanguageDriver languageDriver = new XMLLanguageDriver();
 
     public Configuration() {
     }
@@ -77,7 +81,15 @@ public class Configuration {
         return new PrepareStatementHandler(executor, mappedStatement, parameterObject, boundSql);
     }
 
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+        return languageDriver.createParameterHandler(mappedStatement, parameterObject, boundSql);
+    }
+
     public TypeHandlerRegistry getTypeHandlerRegistry() {
         return typeHandlerRegistry;
+    }
+
+    public LanguageDriver getLanguageDriver() {
+        return languageDriver;
     }
 }

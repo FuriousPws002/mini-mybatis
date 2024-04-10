@@ -48,7 +48,7 @@ public class DefaultSqlSession implements SqlSession {
     public int update(String statement, Object parameter) {
         try {
             MappedStatement ms = configuration.getMappedStatement(statement);
-            return executor.update(ms, null);
+            return executor.update(ms, parameter);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

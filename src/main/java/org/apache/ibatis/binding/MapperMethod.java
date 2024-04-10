@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.reflection.ParamNameResolver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
@@ -14,16 +15,18 @@ import org.apache.ibatis.session.SqlSession;
 public class MapperMethod {
 
     private final SqlCommand command;
+    private final MethodSignature method;
 
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
         this.command = new SqlCommand(config, mapperInterface, method);
+        this.method = new MethodSignature(config, mapperInterface, method);
     }
 
     public Object execute(SqlSession sqlSession, Object[] args) {
         Object result;
         switch (command.getType()) {
             case INSERT: {
-                result = sqlSession.insert(command.getName(), args);
+                result = sqlSession.insert(command.getName(), method.convertArgsToSqlCommandParam(args));
                 break;
             }
             default:
@@ -57,4 +60,16 @@ public class MapperMethod {
         }
     }
 
+    public static class MethodSignature {
+
+        private final ParamNameResolver paramNameResolver;
+
+        public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
+            this.paramNameResolver = new ParamNameResolver(method);
+        }
+
+        public Object convertArgsToSqlCommandParam(Object[] args) {
+            return paramNameResolver.getNamedParams(args);
+        }
+    }
 }

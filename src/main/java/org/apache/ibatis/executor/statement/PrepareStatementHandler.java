@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.Objects;
 
 import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
@@ -20,6 +21,7 @@ public class PrepareStatementHandler implements StatementHandler {
     protected final Executor executor;
     protected final MappedStatement mappedStatement;
     protected BoundSql boundSql;
+    protected final ParameterHandler parameterHandler;
 
     public PrepareStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
@@ -29,6 +31,7 @@ public class PrepareStatementHandler implements StatementHandler {
             boundSql = mappedStatement.getBoundSql(parameterObject);
         }
         this.boundSql = boundSql;
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
     }
 
     @Override
@@ -41,5 +44,10 @@ public class PrepareStatementHandler implements StatementHandler {
         PreparedStatement ps = (PreparedStatement) statement;
         ps.execute();
         return ps.getUpdateCount();
+    }
+
+    @Override
+    public void parameterize(Statement statement) throws SQLException {
+        parameterHandler.setParameters((PreparedStatement) statement);
     }
 }
