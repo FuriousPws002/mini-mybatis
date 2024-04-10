@@ -5,4 +5,15 @@
         INSERT INTO user (name,age,birth) VALUES ('Bob',25,'2024-03-29 22:09:07')
     </insert>
 
+    <insert id="insertWithParam">
+        INSERT INTO user (name,age,birth) VALUES (#{name},#{age},'2024-03-29 22:09:07')
+    </insert>
+
+    <insert id="insertWithoutParam">
+        INSERT INTO user (name,age,birth) VALUES (#{name},18,'2024-03-29 22:09:07')
+    </insert>
+
+    <insert id="insertWithPOJO">
+        INSERT INTO user (name,age,birth) VALUES (#{name},#{age},'2024-03-29 22:09:07')
+    </insert>
 </mapper>

@@ -30,6 +30,10 @@ public class XNode {
         this.body = parseBody(node);
     }
 
+    public XNode newXNode(Node node) {
+        return new XNode(xpathParser, node);
+    }
+
     public <T> T getAttribute(String name) {
         return (T) attributes.getProperty(name);
     }
@@ -44,6 +48,10 @@ public class XNode {
 
     public String getName() {
         return name;
+    }
+
+    public Node getNode() {
+        return node;
     }
 
     private Properties parseAttributes(Node n) {

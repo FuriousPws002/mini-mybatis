@@ -12,4 +12,6 @@ public interface StatementHandler {
     Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException;
 
     int update(Statement statement) throws SQLException;
+
+    void parameterize(Statement statement) throws SQLException;
 }

@@ -41,6 +41,7 @@ public class SimpleExecutor implements Executor {
         Connection connection = configuration.getDataSource().getConnection();
         connection.setAutoCommit(true);
         stmt = handler.prepare(connection, null);
+        handler.parameterize(stmt);
         return stmt;
     }
 
