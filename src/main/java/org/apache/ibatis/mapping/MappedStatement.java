@@ -12,6 +12,7 @@ public class MappedStatement {
     private String id;
     private SqlSource sqlSource;
     private SqlCommandType sqlCommandType;
+    private ResultMap resultMap;
 
     public String getId() {
         return id;
@@ -42,6 +43,11 @@ public class MappedStatement {
 
         public Builder resource(String resource) {
             mappedStatement.resource = resource;
+            return this;
+        }
+
+        public Builder resultMap(ResultMap resultMap) {
+            mappedStatement.resultMap = resultMap;
             return this;
         }
 
