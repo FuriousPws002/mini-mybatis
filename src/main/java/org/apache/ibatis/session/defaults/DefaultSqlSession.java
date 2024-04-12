@@ -1,8 +1,11 @@
 package org.apache.ibatis.session.defaults;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.SimpleExecutor;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -50,8 +53,20 @@ public class DefaultSqlSession implements SqlSession {
             MappedStatement ms = configuration.getMappedStatement(statement);
             return executor.update(ms, parameter);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ExceptionUtils.rethrow(e);
         }
+        return -1;
+    }
+
+    @Override
+    public <T> List<T> selectList(String statement, Object parameter) {
+        try {
+            MappedStatement ms = configuration.getMappedStatement(statement);
+            return executor.query(ms, parameter);
+        } catch (Exception e) {
+            ExceptionUtils.rethrow(e);
+        }
+        return Collections.emptyList();
     }
 
     @Override

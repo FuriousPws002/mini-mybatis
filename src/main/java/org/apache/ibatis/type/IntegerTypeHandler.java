@@ -1,6 +1,7 @@
 package org.apache.ibatis.type;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -10,5 +11,11 @@ public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
     @Override
     protected void setNonNullParameter(PreparedStatement ps, int i, Integer parameter) throws SQLException {
         ps.setInt(i, parameter);
+    }
+
+    @Override
+    protected Integer getNullableResult(ResultSet rs, String columnLabel) throws SQLException {
+        int result = rs.getInt(columnLabel);
+        return result == 0 && rs.wasNull() ? null : result;
     }
 }

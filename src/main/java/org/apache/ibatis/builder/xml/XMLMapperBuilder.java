@@ -43,7 +43,7 @@ public class XMLMapperBuilder extends BaseBuilder {
             if (Objects.isNull(namespace) || namespace.isEmpty()) {
                 throw new BuilderException("mapper namespace can not be empty");
             }
-            buildStatementFromContext(context.evalNodes("insert"));
+            buildStatementFromContext(context.evalNodes("insert|select"));
         } catch (Exception e) {
             throw new BuilderException("parse mapper xml error", e);
         }

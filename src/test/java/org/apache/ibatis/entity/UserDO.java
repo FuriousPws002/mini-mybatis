@@ -6,6 +6,7 @@ package org.apache.ibatis.entity;
 public class UserDO {
 
     private String name;
+    private String namex;
     private Integer age;
 
     public String getName() {
@@ -22,5 +23,13 @@ public class UserDO {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getNamex() {
+        return namex;
+    }
+
+    public void setNamex(String namex) {
+        this.namex = namex;
     }
 }

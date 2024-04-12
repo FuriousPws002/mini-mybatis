@@ -2,6 +2,7 @@ package org.apache.ibatis.builder.xml;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.builder.StaticSqlSource;
@@ -36,6 +37,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         String nodeName = context.getName();
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
         SqlSource sqlSource = configuration.getLanguageDriver().createSqlSource(configuration, context, null);
-        builderAssistant.addMappedStatement(id, sqlCommandType, sqlSource);
+        String resultType = context.getAttribute("resultType");
+        Class<?> resultTypeClass = resolveClass(resultType);
+        builderAssistant.addMappedStatement(id, sqlCommandType, sqlSource,resultTypeClass);
     }
 }
