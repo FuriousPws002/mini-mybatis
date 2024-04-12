@@ -1,5 +1,8 @@
 package org.apache.ibatis.mapping;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.ibatis.session.Configuration;
 
 /**
@@ -12,6 +15,13 @@ public class ResultMap {
      * select标签中的resultType
      */
     private Class<?> type;
+
+    private String id;
+    private List<ResultMapping> resultMappings;
+    /**
+     * 是否包含嵌套resultMap
+     */
+    private boolean hasNestedResultMaps;
 
     public ResultMap() {
     }
@@ -35,5 +45,26 @@ public class ResultMap {
 
     public void setType(Class<?> type) {
         this.type = type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<ResultMapping> getResultMappings() {
+        return resultMappings;
+    }
+
+    public void setResultMappings(List<ResultMapping> resultMappings) {
+        this.resultMappings = resultMappings;
+        this.hasNestedResultMaps = resultMappings.stream().anyMatch(m -> Objects.nonNull(m.getNestedResultMapId()));
+    }
+
+    public boolean hasNestedResultMaps() {
+        return hasNestedResultMaps;
     }
 }
