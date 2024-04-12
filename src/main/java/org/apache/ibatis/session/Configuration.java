@@ -11,6 +11,8 @@ import javax.sql.DataSource;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
+import org.apache.ibatis.executor.resultset.DefaultResultSetHandler;
+import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.PrepareStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -83,6 +85,10 @@ public class Configuration {
 
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         return languageDriver.createParameterHandler(mappedStatement, parameterObject, boundSql);
+    }
+
+    public ResultSetHandler newResultSetHandler(MappedStatement mappedStatement) {
+        return new DefaultResultSetHandler(mappedStatement);
     }
 
     public TypeHandlerRegistry getTypeHandlerRegistry() {

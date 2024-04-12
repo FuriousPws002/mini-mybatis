@@ -3,6 +3,7 @@ package org.apache.ibatis.executor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -31,6 +32,18 @@ public class SimpleExecutor implements Executor {
             StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, null);
             stmt = prepareStatement(handler);
             return handler.update(stmt);
+        } finally {
+            StatementUtil.closeStatement(stmt);
+        }
+    }
+
+    @Override
+    public <T> List<T> query(MappedStatement ms, Object parameter) throws SQLException {
+        Statement stmt = null;
+        try {
+            StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, null);
+            stmt = prepareStatement(handler);
+            return handler.query(stmt);
         } finally {
             StatementUtil.closeStatement(stmt);
         }

@@ -16,4 +16,8 @@
     <insert id="insertWithPOJO">
         INSERT INTO user (name,age,birth) VALUES (#{name},#{age},'2024-03-29 22:09:07')
     </insert>
+
+    <select id="select" resultType="org.apache.ibatis.entity.UserDO">
+        SELECT name,name AS namex,age FROM user
+    </select>
 </mapper>

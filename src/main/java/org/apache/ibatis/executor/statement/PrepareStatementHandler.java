@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
+import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
@@ -22,6 +24,7 @@ public class PrepareStatementHandler implements StatementHandler {
     protected final MappedStatement mappedStatement;
     protected BoundSql boundSql;
     protected final ParameterHandler parameterHandler;
+    protected final ResultSetHandler resultSetHandler;
 
     public PrepareStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
@@ -32,6 +35,7 @@ public class PrepareStatementHandler implements StatementHandler {
         }
         this.boundSql = boundSql;
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
+        this.resultSetHandler = configuration.newResultSetHandler(mappedStatement);
     }
 
     @Override
@@ -49,5 +53,12 @@ public class PrepareStatementHandler implements StatementHandler {
     @Override
     public void parameterize(Statement statement) throws SQLException {
         parameterHandler.setParameters((PreparedStatement) statement);
+    }
+
+    @Override
+    public <T> List<T> query(Statement statement) throws SQLException {
+        PreparedStatement ps = (PreparedStatement) statement;
+        ps.execute();
+        return resultSetHandler.handleResultSets(ps);
     }
 }

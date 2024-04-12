@@ -1,6 +1,7 @@
 package org.apache.ibatis.binding;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.ibatis.mapping.MappedStatement;
@@ -23,16 +24,26 @@ public class MapperMethod {
     }
 
     public Object execute(SqlSession sqlSession, Object[] args) {
-        Object result;
+        Object result = null;
         switch (command.getType()) {
             case INSERT: {
                 result = sqlSession.insert(command.getName(), method.convertArgsToSqlCommandParam(args));
+                break;
+            }
+            case SELECT: {
+                if (method.returnsMany) {
+                    result = executeForMany(sqlSession, args);
+                }
                 break;
             }
             default:
                 throw new BindingException(command.getType() + " not support");
         }
         return result;
+    }
+
+    private <T> Object executeForMany(SqlSession sqlSession, Object[] args) {
+        return sqlSession.selectList(command.getName(), method.convertArgsToSqlCommandParam(args));
     }
 
     public static class SqlCommand {
@@ -63,9 +74,11 @@ public class MapperMethod {
     public static class MethodSignature {
 
         private final ParamNameResolver paramNameResolver;
+        private final boolean returnsMany;
 
         public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
             this.paramNameResolver = new ParamNameResolver(method);
+            returnsMany = Collection.class.isAssignableFrom(method.getReturnType());
         }
 
         public Object convertArgsToSqlCommandParam(Object[] args) {

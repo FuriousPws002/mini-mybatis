@@ -1,5 +1,7 @@
 package org.apache.ibatis.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.entity.UserDO;
 import org.apache.ibatis.reflection.ParamNameResolver;
@@ -26,4 +28,6 @@ public interface UserMapper {
     void insertWithoutParam(String namex);
 
     void insertWithPOJO(UserDO user);
+
+    List<UserDO> select();
 }

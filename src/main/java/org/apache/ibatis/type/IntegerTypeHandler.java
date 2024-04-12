@@ -15,6 +15,7 @@ public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
 
     @Override
     protected Integer getNullableResult(ResultSet rs, String columnLabel) throws SQLException {
-        return rs.getInt(columnLabel);
+        int result = rs.getInt(columnLabel);
+        return result == 0 && rs.wasNull() ? null : result;
     }
 }

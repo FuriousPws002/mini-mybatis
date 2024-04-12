@@ -1,9 +1,12 @@
 package org.apache.ibatis.session;
 
+import java.util.List;
+
 import org.apache.ibatis.DataSourceBuilderTest;
 import org.apache.ibatis.dao.UserMapper;
 import org.apache.ibatis.entity.UserDO;
 import org.apache.ibatis.session.defaults.DefaultSqlSession;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -76,4 +79,19 @@ public class SqlSessionTest {
         user.setAge(20);
         userMapper.insertWithPOJO(user);
     }
+
+    @Test
+    public void queryPOJOHandleTheResult() {
+        Configuration configuration = new Configuration();
+        configuration.setDataSource(DataSourceBuilderTest.build());
+        configuration.addMapper(UserMapper.class);
+        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<UserDO> list = userMapper.select();
+        Assert.assertNotNull(list);
+        UserDO userDO = list.get(0);
+        Assert.assertNotNull(userDO.getName());
+        Assert.assertNotNull(userDO.getNamex());
+    }
+
 }

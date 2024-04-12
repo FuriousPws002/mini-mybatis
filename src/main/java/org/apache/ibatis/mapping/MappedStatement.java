@@ -31,6 +31,10 @@ public class MappedStatement {
         return new BoundSql(boundSql.getSql(),boundSql.getParameterMappings(),parameterObject);
     }
 
+    public ResultMap getResultMap() {
+        return resultMap;
+    }
+
     public static class Builder {
         private MappedStatement mappedStatement = new MappedStatement();
 

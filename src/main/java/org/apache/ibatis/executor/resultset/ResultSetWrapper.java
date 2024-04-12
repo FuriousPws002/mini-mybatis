@@ -4,12 +4,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
@@ -35,4 +32,11 @@ public class ResultSetWrapper {
         }
     }
 
+    public ResultSet getResultSet() {
+        return resultSet;
+    }
+
+    public List<String> getColumnLabels() {
+        return columnLabels;
+    }
 }
