@@ -20,4 +20,39 @@
     <select id="select" resultType="org.apache.ibatis.entity.UserDO">
         SELECT name,name AS namex,age FROM user
     </select>
+
+    <resultMap id="userResultMap" type="org.apache.ibatis.entity.UserDO">
+        <result column="name" property="namex"/>
+        <result column="age" property="age"/>
+    </resultMap>
+
+    <resultMap id="nestedUserResultMap" type="org.apache.ibatis.entity.UserDTO">
+        <result column="user_name" property="name"/>
+        <result column="age" property="age"/>
+        <collection property="carList" ofType="org.apache.ibatis.entity.CarDO">
+            <result column="car_name" property="name"/>
+            <result column="color" property="color"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectResultMap" resultMap="userResultMap">
+        SELECT
+        user.name,
+        user.age
+        FROM user
+    </select>
+
+    <select id="selectNestedResultMap" resultMap="nestedUserResultMap">
+        SELECT
+        user.name as user_name,
+        user.age,
+        car.name  as car_name,
+        car.color
+        FROM user
+        LEFT JOIN user_car_relation relation ON user.id = relation.user_id
+        LEFT JOIN car ON relation.car_id = car.id
+    </select>
+
+
+
 </mapper>

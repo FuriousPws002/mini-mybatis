@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.DataSourceBuilderTest;
 import org.apache.ibatis.dao.UserMapper;
 import org.apache.ibatis.entity.UserDO;
+import org.apache.ibatis.entity.UserDTO;
 import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.junit.Assert;
 import org.junit.Test;
@@ -94,4 +95,36 @@ public class SqlSessionTest {
         Assert.assertNotNull(userDO.getNamex());
     }
 
+    /**
+     * 查询简单resultMap映射
+     */
+    @Test
+    public void queryResultMap() {
+        Configuration configuration = new Configuration();
+        configuration.setDataSource(DataSourceBuilderTest.build());
+        configuration.addMapper(UserMapper.class);
+        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<UserDO> list = userMapper.selectResultMap();
+        Assert.assertNotNull(list);
+        UserDO userDO = list.get(0);
+        Assert.assertNotNull(userDO.getNamex());
+    }
+
+    /**
+     * 查询嵌套resultMap映射
+     */
+    @Test
+    public void queryNestedResultMap() {
+        Configuration configuration = new Configuration();
+        configuration.setDataSource(DataSourceBuilderTest.build());
+        configuration.addMapper(UserMapper.class);
+        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<UserDTO> list = userMapper.selectNestedResultMap();
+        Assert.assertNotNull(list);
+        UserDTO user = list.get(0);
+        Assert.assertNotNull(user.getName());
+        Assert.assertNotNull(user.getCarList());
+    }
 }
