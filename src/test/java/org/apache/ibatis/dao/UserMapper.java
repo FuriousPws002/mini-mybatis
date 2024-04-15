@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.entity.UserDO;
+import org.apache.ibatis.entity.UserDTO;
 import org.apache.ibatis.reflection.ParamNameResolver;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
@@ -30,4 +31,8 @@ public interface UserMapper {
     void insertWithPOJO(UserDO user);
 
     List<UserDO> select();
+
+    List<UserDO> selectResultMap();
+
+    List<UserDTO> selectNestedResultMap();
 }

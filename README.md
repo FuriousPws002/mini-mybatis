@@ -6,3 +6,4 @@
 [3.执行静态sql](https://github.com/FuriousPws002/mini-mybatis/wiki/3.%E6%89%A7%E8%A1%8C%E9%9D%99%E6%80%81sql "Markdown") <br>
 [4.参数绑定](https://github.com/FuriousPws002/mini-mybatis/wiki/4.%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A "Markdown") <br>
 [5.resultType结果集处理](https://github.com/FuriousPws002/mini-mybatis/wiki/5.resultType%E7%BB%93%E6%9E%9C%E9%9B%86%E5%A4%84%E7%90%86 "Markdown") <br>
+[6.resultMap结果集处理](https://github.com/FuriousPws002/mini-mybatis/wiki/6.resultMap%E7%BB%93%E6%9E%9C%E9%9B%86%E5%A4%84%E7%90%86 "Markdown") <br>

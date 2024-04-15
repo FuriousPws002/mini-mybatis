@@ -1,18 +1,27 @@
 package org.apache.ibatis.executor.resultset;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -54,8 +63,79 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     private void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults) throws SQLException {
-        handleRowValuesForSimpleResultMap(rsw, resultMap, multipleResults);
+        if (resultMap.hasNestedResultMaps()) {
+            handleRowValuesForNestedResultMap(rsw, resultMap, multipleResults);
+        } else {
+            handleRowValuesForSimpleResultMap(rsw, resultMap, multipleResults);
+        }
     }
+
+    private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults) throws SQLException {
+        ResultSet resultSet = rsw.getResultSet();
+        // nested resultmaps
+        Map<String, Object> nestedResultObjects = new HashMap<>();
+        while (!resultSet.isClosed() && resultSet.next()) {
+            String rowKey = createRowKey(rsw, resultMap);
+            Object partialObject = nestedResultObjects.get(rowKey);
+            Object rowValue = getRowValue(rsw, resultMap, rowKey, partialObject, nestedResultObjects);
+            if (Objects.isNull(partialObject)) {
+                multipleResults.add(rowValue);
+            }
+        }
+    }
+
+    private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap, String combinedKey, Object partialObject, Map<String, Object> nestedResultObjects) throws SQLException {
+        Object rowValue = partialObject;
+        if (Objects.nonNull(rowValue)) {
+            applyNestedResultMappings(rsw, resultMap, rowValue, nestedResultObjects, combinedKey);
+        } else {
+            rowValue = createResultObject(resultMap);
+            applyAutomaticMappings(rsw, resultMap, rowValue);
+            applyNestedResultMappings(rsw, resultMap, rowValue, nestedResultObjects, combinedKey);
+            nestedResultObjects.put(combinedKey, rowValue);
+        }
+
+        return rowValue;
+    }
+
+    private void applyNestedResultMappings(ResultSetWrapper rsw, ResultMap resultMap, Object parentRowValue, Map<String, Object> nestedResultObjects, String parentRowKey) {
+        if (Objects.isNull(resultMap.getResultMappings())) {
+            return;
+        }
+        for (ResultMapping resultMapping : resultMap.getResultMappings()) {
+            final String nestedResultMapId = resultMapping.getNestedResultMapId();
+            if (StringUtils.isEmpty(nestedResultMapId)) {
+                continue;
+            }
+            try {
+                ResultMap nestedResultMap = configuration.getResultMap(nestedResultMapId);
+                String rowKey = createRowKey(rsw, nestedResultMap);
+                String combinedKey = rowKey + parentRowKey;
+                Object rowValue = nestedResultObjects.get(combinedKey);
+                boolean knownValue = rowValue != null;
+                rowValue = getRowValue(rsw, nestedResultMap, combinedKey, rowValue, nestedResultObjects);
+                if (rowValue != null && !knownValue) {
+                    linkObjects(parentRowValue, resultMapping, rowValue);
+                }
+            } catch (SQLException e) {
+                throw new ExecutorException("Error getting nested result map values for '" + resultMapping.getProperty() + "'.  Cause: " + e, e);
+            }
+        }
+    }
+
+    private void linkObjects(Object parentRowValue, ResultMapping resultMapping, Object rowValue) {
+        try {
+            List old = (List<?>) FieldUtils.readField(parentRowValue, resultMapping.getProperty(), true);
+            Field field = FieldUtils.getDeclaredField(parentRowValue.getClass(), resultMapping.getProperty(), true);
+            Object list = field.getType().newInstance();
+            Method add = List.class.getDeclaredMethod("add", Object.class);
+            add.invoke(list, rowValue);
+            old.addAll(((List) list));
+        } catch (Exception e) {
+            ExceptionUtils.rethrow(e);
+        }
+    }
+
 
     private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults) throws SQLException {
         ResultSet resultSet = rsw.getResultSet();
@@ -65,14 +145,19 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
     }
 
+    private String createRowKey(ResultSetWrapper rsw, ResultMap resultMap) throws SQLException {
+        Object rowValue = getRowValue(rsw, resultMap);
+        return rsw.hashCode() + ToStringBuilder.reflectionToString(rowValue, ToStringStyle.NO_CLASS_NAME_STYLE);
+    }
+
     private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap) throws SQLException {
         Object rowValue = createResultObject(resultMap);
-        applyAutomaticMappings(rsw, rowValue);
+        applyAutomaticMappings(rsw, resultMap, rowValue);
         return rowValue;
     }
 
-    private boolean applyAutomaticMappings(ResultSetWrapper rsw, Object rowValue) throws SQLException {
-        List<UnMappedColumnAutoMapping> autoMapping = createAutomaticMappings(rsw, rowValue);
+    private boolean applyAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap, Object rowValue) throws SQLException {
+        List<UnMappedColumnAutoMapping> autoMapping = createAutomaticMappings(rsw, resultMap, rowValue);
         boolean foundValues = false;
         if (!autoMapping.isEmpty()) {
             for (UnMappedColumnAutoMapping mapping : autoMapping) {
@@ -90,8 +175,20 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return foundValues;
     }
 
-    private List<UnMappedColumnAutoMapping> createAutomaticMappings(ResultSetWrapper rsw, Object rowValue) {
+    private List<UnMappedColumnAutoMapping> createAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap, Object rowValue) {
         List<UnMappedColumnAutoMapping> autoMapping = new ArrayList<>();
+        //若存在resultMapping，使用resultMapping
+        if (Objects.nonNull(resultMap.getResultMappings()) && !resultMap.getResultMappings().isEmpty()) {
+            return resultMap.getResultMappings().stream()
+                    .filter(m -> StringUtils.isEmpty(m.getNestedResultMapId()))
+                    .map(m -> {
+                        UnMappedColumnAutoMapping auto = new UnMappedColumnAutoMapping(m.getColumn(), m.getProperty(), m.getTypeHandler());
+//                        if(Objects.isNull(auto.typeHandler)){
+//
+//                        }
+                        return auto;
+                    }).collect(Collectors.toList());
+        }
         List<String> columnLabels = rsw.getColumnLabels();
         for (String columnLabel : columnLabels) {
             Field field = FieldUtils.getDeclaredField(rowValue.getClass(), columnLabel, true);

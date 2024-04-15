@@ -17,6 +17,7 @@ import org.apache.ibatis.executor.statement.PrepareStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -35,6 +36,7 @@ public class Configuration {
     private final Map<String, MappedStatement> mappedStatements = new HashMap<>();
     private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
     private final LanguageDriver languageDriver = new XMLLanguageDriver();
+    private final Map<String, ResultMap> resultMaps = new HashMap<>();
 
     public Configuration() {
     }
@@ -97,5 +99,13 @@ public class Configuration {
 
     public LanguageDriver getLanguageDriver() {
         return languageDriver;
+    }
+
+    public void addResultMap(ResultMap resultMap) {
+        resultMaps.put(resultMap.getId(), resultMap);
+    }
+
+    public ResultMap getResultMap(String id) {
+        return resultMaps.get(id);
     }
 }

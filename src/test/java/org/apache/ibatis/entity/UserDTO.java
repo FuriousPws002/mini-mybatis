@@ -1,6 +1,6 @@
 package org.apache.ibatis.entity;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author furious 2024/4/13
@@ -10,7 +10,7 @@ public class UserDTO {
     private String name;
     private Integer age;
 
-    private List<CarDO> carList;
+    private ArrayList<CarDO> carList = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -28,11 +28,11 @@ public class UserDTO {
         this.age = age;
     }
 
-    public List<CarDO> getCarList() {
+    public ArrayList<CarDO> getCarList() {
         return carList;
     }
 
-    public void setCarList(List<CarDO> carList) {
+    public void setCarList(ArrayList<CarDO> carList) {
         this.carList = carList;
     }
 }

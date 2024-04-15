@@ -38,7 +38,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
         SqlSource sqlSource = configuration.getLanguageDriver().createSqlSource(configuration, context, null);
         String resultType = context.getAttribute("resultType");
+        String resultMap = context.getAttribute("resultMap");
         Class<?> resultTypeClass = resolveClass(resultType);
-        builderAssistant.addMappedStatement(id, sqlCommandType, sqlSource,resultTypeClass);
+        builderAssistant.addMappedStatement(id, sqlCommandType, sqlSource, resultTypeClass, resultMap);
     }
 }
