@@ -53,6 +53,30 @@
         LEFT JOIN car ON relation.car_id = car.id
     </select>
 
+    <select id="listDynamic" resultType="org.apache.ibatis.entity.UserDO">
+        SELECT
+        name,
+        age
+        FROM user
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="age != null">
+                and age = #{age}
+            </if>
+        </trim>
+    </select>
 
+    <select id="listForeach" resultType="org.apache.ibatis.entity.UserDO">
+        SELECT
+        name,
+        age
+        FROM user
+        WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>
