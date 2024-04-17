@@ -35,4 +35,8 @@ public interface UserMapper {
     List<UserDO> selectResultMap();
 
     List<UserDTO> selectNestedResultMap();
+
+    List<UserDO> listDynamic(@Param("name") String name, @Param("age") Integer age);
+
+    List<UserDO> listForeach(@Param("ids") List<Long> ids);
 }

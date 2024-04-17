@@ -34,6 +34,7 @@ public class XMLScriptBuilder extends BaseBuilder {
         this.parameterType = parameterType;
         nodeHandlerMap.put("if", new IfHandler());
         nodeHandlerMap.put("trim", new TrimHandler());
+        nodeHandlerMap.put("foreach", new ForeachHandler());
     }
 
     public SqlSource parseScriptNode() {
@@ -96,4 +97,20 @@ public class XMLScriptBuilder extends BaseBuilder {
             targetContents.add(trim);
         }
     }
+
+    private class ForeachHandler implements NodeHandler {
+
+        @Override
+        public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
+            MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
+            String collection = nodeToHandle.getAttribute("collection");
+            String item = nodeToHandle.getAttribute("item");
+            String open = nodeToHandle.getAttribute("open");
+            String close = nodeToHandle.getAttribute("close");
+            String separator = nodeToHandle.getAttribute("separator");
+            ForeachSqlNode forEachSqlNode = new ForeachSqlNode(mixedSqlNode, collection, item, open, close, separator);
+            targetContents.add(forEachSqlNode);
+        }
+    }
+
 }

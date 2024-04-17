@@ -28,7 +28,7 @@ public class MappedStatement {
 
     public BoundSql getBoundSql(Object parameterObject) {
         BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
-        return new BoundSql(boundSql.getSql(),boundSql.getParameterMappings(),parameterObject);
+        return new BoundSql(boundSql.getSql(), boundSql.getParameterMappings(), parameterObject, boundSql.getAdditionalParameters());
     }
 
     public ResultMap getResultMap() {

@@ -1,5 +1,6 @@
 package org.apache.ibatis.session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.DataSourceBuilderTest;
@@ -127,4 +128,42 @@ public class SqlSessionTest {
         Assert.assertNotNull(user.getName());
         Assert.assertNotNull(user.getCarList());
     }
+
+    /**
+     * 动态SQL-包含trim标签和if标签
+     */
+    @Test
+    public void queryDynamicSql() {
+        UserMapper userMapper = getUserMapper();
+        List<UserDO> list1 = userMapper.listDynamic(null, null);
+        Assert.assertNotNull(list1);
+        List<UserDO> list2 = userMapper.listDynamic("Sam", null);
+        Assert.assertNotNull(list2);
+        List<UserDO> list3 = userMapper.listDynamic(null, 20);
+        Assert.assertNotNull(list3);
+        List<UserDO> list4 = userMapper.listDynamic("Sam", 20);
+        Assert.assertNotNull(list4);
+    }
+
+    /**
+     * foreach标签测试
+     */
+    @Test
+    public void queryForeachTag() {
+        UserMapper userMapper = getUserMapper();
+        List<Long> idList = new ArrayList<>();
+        idList.add(1L);
+        idList.add(2L);
+        List<UserDO> list = userMapper.listForeach(idList);
+        Assert.assertNotNull(list);
+    }
+
+    private UserMapper getUserMapper() {
+        Configuration configuration = new Configuration();
+        configuration.setDataSource(DataSourceBuilderTest.build());
+        configuration.addMapper(UserMapper.class);
+        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        return sqlSession.getMapper(UserMapper.class);
+    }
+
 }
