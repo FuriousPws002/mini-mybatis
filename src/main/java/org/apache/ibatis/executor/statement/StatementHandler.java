@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.apache.ibatis.mapping.BoundSql;
+
 /**
  * @author furious 2024/4/8
  */
@@ -17,4 +19,6 @@ public interface StatementHandler {
     void parameterize(Statement statement) throws SQLException;
 
     <T> List<T> query(Statement statement) throws SQLException;
+
+    BoundSql getBoundSql();
 }

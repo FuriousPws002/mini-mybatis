@@ -7,6 +7,7 @@ import org.apache.ibatis.DataSourceBuilderTest;
 import org.apache.ibatis.dao.UserMapper;
 import org.apache.ibatis.entity.UserDO;
 import org.apache.ibatis.entity.UserDTO;
+import org.apache.ibatis.plugin.PageInterceptor;
 import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.junit.Assert;
 import org.junit.Test;
@@ -157,6 +158,23 @@ public class SqlSessionTest {
         List<UserDO> list = userMapper.listForeach(idList);
         Assert.assertNotNull(list);
     }
+
+    @Test
+    public void queryPointcut() {
+        Configuration configuration = new Configuration();
+        configuration.addInterceptor(new PageInterceptor());
+        configuration.setDataSource(DataSourceBuilderTest.build());
+        configuration.addMapper(UserMapper.class);
+        SqlSession sqlSession = new DefaultSqlSession(configuration);
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<Long> idList = new ArrayList<>();
+        idList.add(1L);
+        idList.add(2L);
+        List<UserDO> list = userMapper.listForeach(idList);
+        Assert.assertNotNull(list);
+        Assert.assertEquals(list.size(), 1);
+    }
+
 
     private UserMapper getUserMapper() {
         Configuration configuration = new Configuration();

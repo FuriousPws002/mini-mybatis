@@ -18,6 +18,10 @@ import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.InterceptorChain;
+import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.PointcutRegistry;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -37,6 +41,8 @@ public class Configuration {
     private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
     private final LanguageDriver languageDriver = new XMLLanguageDriver();
     private final Map<String, ResultMap> resultMaps = new HashMap<>();
+    private final PointcutRegistry pointcutRegistry = new PointcutRegistry();
+    private final InterceptorChain interceptorChain = new InterceptorChain(this);
 
     public Configuration() {
     }
@@ -82,7 +88,9 @@ public class Configuration {
     }
 
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
-        return new PrepareStatementHandler(executor, mappedStatement, parameterObject, boundSql);
+        StatementHandler statementHandler = new PrepareStatementHandler(executor, mappedStatement, parameterObject, boundSql);
+        statementHandler = interceptorChain.pluginAll(statementHandler);
+        return statementHandler;
     }
 
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
@@ -107,5 +115,13 @@ public class Configuration {
 
     public ResultMap getResultMap(String id) {
         return resultMaps.get(id);
+    }
+
+    public PointcutRegistry getPointcutRegistry() {
+        return pointcutRegistry;
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptorChain.addInterceptor(interceptor);
     }
 }

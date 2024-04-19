@@ -61,4 +61,9 @@ public class PrepareStatementHandler implements StatementHandler {
         ps.execute();
         return resultSetHandler.handleResultSets(ps);
     }
+
+    @Override
+    public BoundSql getBoundSql() {
+        return boundSql;
+    }
 }
