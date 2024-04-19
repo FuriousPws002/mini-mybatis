@@ -8,3 +8,4 @@
 [5.resultType结果集处理](https://github.com/FuriousPws002/mini-mybatis/wiki/5.resultType%E7%BB%93%E6%9E%9C%E9%9B%86%E5%A4%84%E7%90%86 "Markdown") <br>
 [6.resultMap结果集处理](https://github.com/FuriousPws002/mini-mybatis/wiki/6.resultMap%E7%BB%93%E6%9E%9C%E9%9B%86%E5%A4%84%E7%90%86 "Markdown") <br>
 [7.动态sql](https://github.com/FuriousPws002/mini-mybatis/wiki/7.%E5%8A%A8%E6%80%81sql "Markdown") <br>
+[8.插件支持](https://github.com/FuriousPws002/mini-mybatis/wiki/8.%E6%8F%92%E4%BB%B6%E6%94%AF%E6%8C%81 "Markdown") <br>
